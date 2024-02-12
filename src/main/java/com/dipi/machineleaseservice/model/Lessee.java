@@ -1,8 +1,12 @@
 package com.dipi.machineleaseservice.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,5 +46,13 @@ public class Lessee {
     @OneToMany(mappedBy ="lessee",cascade = CascadeType.ALL,
             orphanRemoval = true)
     private List<Lease> leases = new ArrayList<>();
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "lessee", cascade = CascadeType.DETACH)
+
+   // @OneToMany(mappedBy = "lessee", cascade = CascadeType.ALL, orphanRemoval = true)
+
+    private List<Equipment> leasedEquipments=new ArrayList<>();
+
 
 }

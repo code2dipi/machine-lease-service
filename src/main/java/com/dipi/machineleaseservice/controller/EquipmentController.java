@@ -3,16 +3,20 @@ package com.dipi.machineleaseservice.controller;
 import com.dipi.machineleaseservice.dto.EquipmentDto;
 import com.dipi.machineleaseservice.model.Equipment;
 import com.dipi.machineleaseservice.service.EquipmentService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 
 import java.util.List;
 @RestController
 
 @RequestMapping("api/equipments")
 public class EquipmentController {
+    private static final Logger LOG = LoggerFactory.getLogger(EquipmentController.class);
 
     @Autowired
     private EquipmentService equipmentService;
@@ -21,8 +25,16 @@ public class EquipmentController {
 
     @PostMapping
     public ResponseEntity<Equipment> createEquipment(@RequestBody EquipmentDto equipmentDto) throws Exception {
-        Equipment createdEquipment = equipmentService.createEquipment(equipmentDto);
-        return new ResponseEntity<>(createdEquipment, HttpStatus.CREATED);
+       try {
+           Equipment createdEquipment = equipmentService.createEquipment(equipmentDto);
+           if (createdEquipment != null) {
+               return new ResponseEntity<>(createdEquipment, HttpStatus.CREATED);
+           }
+           return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+       }catch(Exception e){
+           LOG.error("Error occured while creating equipment", e);
+           return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+       }
     }
 
     @GetMapping("/{id}")
@@ -35,8 +47,7 @@ public class EquipmentController {
     @GetMapping("/all")
     public ResponseEntity<List<Equipment>> getAllEquipment() {
         List<Equipment> allEquipment = equipmentService.getAllEquipments();
-        return ResponseEntity.ok().body(allEquipment);
-    }
+        return new ResponseEntity<>(allEquipment, HttpStatus.OK);}
 
     @PutMapping("/{id}")
 
@@ -50,7 +61,7 @@ public class EquipmentController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEquipment(@PathVariable Long id) {
-        equipmentService.deleteEquipment(id);
+        equipmentService.deleteEquipmentAndDetachLesseeReference(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

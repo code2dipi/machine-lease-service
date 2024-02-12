@@ -3,20 +3,22 @@ package com.dipi.machineleaseservice.controller;
 import com.dipi.machineleaseservice.dto.LesseeDto;
 import com.dipi.machineleaseservice.model.Lessee;
 import com.dipi.machineleaseservice.service.LesseeService;
+import lombok.extern.java.Log;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/api/lessees")
 public class LesseeController {
     @Autowired
     private LesseeService lesseeService;
+    private static final Logger LOG = LoggerFactory.getLogger(LesseeController.class);
 
     // Create a new Lessee
     @PostMapping
@@ -42,14 +44,26 @@ public class LesseeController {
     // Update a Lessee by ID
     @PutMapping("/{id}")
     public ResponseEntity<Lessee> updateLessee(@PathVariable Long id, @RequestBody LesseeDto lesseeDto) {
-        Lessee updatedLessee = lesseeService.updateLessee(id, lesseeDto);
-        return new ResponseEntity<>(updatedLessee, HttpStatus.OK);
+
+        try{
+            Lessee updatedLessee = lesseeService.updateLessee(id, lesseeDto);
+            return new ResponseEntity<>(updatedLessee, HttpStatus.OK);
+        }catch(Exception e){
+            LOG.warn("Failed to update" + e.getMessage());
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     // Delete a Lessee by ID
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteLessee(@PathVariable Long id) {
-        lesseeService.deleteLessee(id);
+        try{
+            lesseeService.deleteLesseeAndCorrespondingEquipmentReferences(id);
+
+        }catch(Exception e){
+            LOG.warn("Failed to delete" + e.getMessage());
+        }
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
     }
 }

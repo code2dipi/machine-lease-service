@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EquipmentDto {
+    private Long equipmentId;
     private String equipmentName;
     private String manufacturer;
     private String modelNumber;
@@ -20,4 +21,5 @@ public class EquipmentDto {
     private String description;
 
     private Long lesseeId; // The ID of the Lessee associated with the Equipment
+    private String lesseeName;
 }

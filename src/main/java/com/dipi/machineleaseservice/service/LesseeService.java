@@ -2,7 +2,9 @@ package com.dipi.machineleaseservice.service;
 
 import com.dipi.machineleaseservice.dto.LesseeDto;
 import com.dipi.machineleaseservice.model.Lessee;
+import com.dipi.machineleaseservice.repository.EquipmentRepository;
 import com.dipi.machineleaseservice.repository.LesseeRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,12 +14,13 @@ import java.util.Optional;
 @Service
 public class LesseeService {
     private final LesseeRepository leseeRepository;
+    private final EquipmentRepository equipmentRepository;
 
     @Autowired
-    public LesseeService(LesseeRepository leseeRepository) {
+    public LesseeService(LesseeRepository leseeRepository,  EquipmentRepository equipmentRepository) {
         this.leseeRepository = leseeRepository;
+        this.equipmentRepository = equipmentRepository;
     }
-
     public List<Lessee> getAllLessees() {
         return leseeRepository.findAll();
 
@@ -25,6 +28,10 @@ public class LesseeService {
 
     public Lessee getLesseeById(Long id) {
         return leseeRepository.findById(id).orElseThrow(()->new IllegalArgumentException("Lessee not found with this id: " + id));
+    }
+
+    public Lessee getLesseeByName(String name){
+        return leseeRepository.findBylesseeName(name).orElseThrow(()->new IllegalArgumentException("Lessee not found with this name: " + name));
     }
 
     public Lessee createLessee(LesseeDto lesseeDto) {
@@ -74,8 +81,19 @@ public class LesseeService {
         return null;
     }
 
-    public void deleteLessee(Long id) {
-        leseeRepository.deleteById(id);
+    @Transactional
+    public void deleteLesseeAndCorrespondingEquipmentReferences(Long lesseeId) {
+        Optional<Lessee> lessee = leseeRepository.findById(lesseeId);
+        lessee.ifPresent(l -> {
+            // Remove the references to the Lessee from associated Equipment entities using lambda expression
 
+            l.getLeasedEquipments().forEach(e -> {
+                e.setLessee(null);
+                equipmentRepository.save(e);
+            });
+            // Delete the Lessee
+            leseeRepository.delete(l);
+        });
     }
 }
+

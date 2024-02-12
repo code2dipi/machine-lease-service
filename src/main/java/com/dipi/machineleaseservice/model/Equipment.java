@@ -1,10 +1,15 @@
 package com.dipi.machineleaseservice.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import java.time.LocalDate;
 
 @Entity
@@ -35,9 +40,15 @@ public class Equipment {
     private String category;
     private String description;
 
+    @JsonBackReference
     @ManyToOne
-    @JoinColumn(name="lessee_id")
+    @JoinColumn(name="lessee_id",referencedColumnName = "lesseeId",updatable = true)
+
+    //@OnDelete(action = OnDeleteAction.CASCADE)
+   // @JsonIgnore
     private Lessee lessee;
+
+
 }
 
 
