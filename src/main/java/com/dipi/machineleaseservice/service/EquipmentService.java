@@ -18,15 +18,21 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+
 public class EquipmentService {
 
-    @Autowired
-    private EquipmentRepository equipmentRepository;
-
-    @Autowired
-    private LesseeService lesseeService;
-
+    private final EquipmentRepository equipmentRepository;
+    private final LesseeService lesseeService;
     private static final Logger LOG = LoggerFactory.getLogger(EquipmentService.class);
+
+
+    @Autowired
+    public EquipmentService(EquipmentRepository equipmentRepository, LesseeService lesseeService) {
+        this.equipmentRepository = equipmentRepository;
+        this.lesseeService = lesseeService;
+    }
+
+
 
 
     public List<Equipment> getAllEquipments() {
