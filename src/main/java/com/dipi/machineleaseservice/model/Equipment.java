@@ -35,9 +35,13 @@ public class Equipment {
     private String modelNumber;
 
     private String serialNumber;
+
     private LocalDate purchaseDate;
+
     private Double price;
+
     private String category;
+
     private String description;
 
     @JsonBackReference

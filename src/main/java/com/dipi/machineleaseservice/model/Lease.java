@@ -40,11 +40,9 @@ public class Lease {
     @Enumerated(EnumType.STRING)
     private LeaseStatus leaseStatus;
 
-    //Establish One-to-One relationship with LeaseTerms
-      @OneToMany(mappedBy ="lease",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy ="lease",cascade = CascadeType.ALL)
       private List<LeaseTerms> leaseTerms = new ArrayList<>();
 
-    //Establish One-to-Many relationship with LeasePayments
-     @OneToMany(mappedBy ="lease",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy ="lease",cascade = CascadeType.ALL)
      private List<LeasePayments> leasePayments = new ArrayList<>();
 }
